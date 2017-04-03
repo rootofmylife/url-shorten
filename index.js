@@ -1,4 +1,5 @@
-var express = require('express')
+var express = require('express');
+var path = require('path');
 var app = express()
 
 function validateURL(i){
@@ -6,8 +7,25 @@ function validateURL(i){
     return regex.test(i);
 }
 
+app.get('/', function(req, res) {
+    var fileName = path.join(__dirname, 'index.html');
+    res.sendFile(fileName, function (err) {
+    if (err) {
+      console.log(err);
+      res.status(err.status).end();
+    }
+    else {
+      console.log('Sent:', fileName);
+    }
+  });
+})
+
 app.get('/:query', function (req, res) {
   var url = req.params.query;
+})
+
+app.get('/new/:url*',function(req, res) {
+    
 })
 
 app.listen(3000, function () {
