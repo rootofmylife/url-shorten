@@ -3,6 +3,7 @@ var path = require('path');
 var app = express()
 var mongoose = require("mongoose");
 var Url = require("./model");
+var vURL = require("valid-url");
 var mongoURL = process.env.MONGOLAB_URI || "mongodb://localhost:27017/url-shorten";
 
 //connect to db
@@ -54,7 +55,14 @@ app.get('/:query', function (req, res) {
 })
 
 app.get('/new/:url*',function(req, res) {
-    
+  var new_url = req.params.url;
+  Url.findOne({'url': new_url}, function(err, docs){
+    if(err) console.log(err);
+    res.send({
+      'url': Url.url,
+      'shortURL': Url.shortURL
+    });
+  });
 })
 
 app.listen(8080, function () {
