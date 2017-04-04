@@ -20,6 +20,12 @@ function validateURL(i){
     return regex.test(i);
 }
 
+function linkGen() {
+    // Generates random four digit number for link
+    var num = Math.floor(100000 + Math.random() * 900000);
+    return num.toString().substring(0, 4);
+}
+
 app.get('/', function(req, res) {
     var fileName = path.join(__dirname, 'index.html');
     res.sendFile(fileName, function (err) {
@@ -42,7 +48,7 @@ app.get('/:query', function (req, res) {
     res.status(404).send("Invalid short URL");
   }
   else {
-    Url.find({id: id}, function(err, docs){
+    Url.findOne({'shortURL': id}, function(err, docs){
       if(err) console.log(err);
       if(docs && docs.length){
         res.redirect(docs[0].url);
@@ -58,10 +64,16 @@ app.get('/new/:url*',function(req, res) {
   var new_url = req.params.url;
   Url.findOne({'url': new_url}, function(err, docs){
     if(err) console.log(err);
-    res.send({
-      'url': Url.url,
-      'shortURL': Url.shortURL
-    });
+    else if (!docs) {
+      var num = linkGen();
+      var temp = new Url({'url': new_url, 'shortURL': num});
+      Url.save(temp);
+    } else {
+        res.send({
+          'url': docs.url,
+          'shortURL': docs.shortURL
+        });
+    }
   });
 })
 
